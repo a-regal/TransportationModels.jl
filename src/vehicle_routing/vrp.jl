@@ -1,17 +1,6 @@
 using JuMP, HiGHS
 
-function two_index_vehicle_flow_cvrp(cost::Array{Float64,2}, 
-                        demand::Array{Int,1},
-                        capacity::Int;
-                        K=1,
-                        solver_options=Dict("presolve"=>"on"))
-        """
-        Implement a two-index vehicle flow formulation of the CVRP
-
-
-
-
-        """
+function two_index_vehicle_flow_cvrp(cost::Array{Float64,2}, demand::Array{Int,1}, capacity::Int; K=1, solver_options=Dict("presolve"=>"on"))
 
         m = Model(HiGHS.Optimizer)
 
@@ -49,15 +38,8 @@ function two_index_vehicle_flow_cvrp(cost::Array{Float64,2},
         return x_sol, u_sol
 end
 
-function three_index_vehicle_flow_cvrp(cost::Array{Float64,2}, 
-    demand::Array{Int,1},
-    capacity::Int;
-    K=1,
-    solver_options=Dict("presolve"=>"on"))
+function three_index_vehicle_flow_cvrp(cost::Array{Float64,2}, demand::Array{Int,1}, capacity::Int; K=1, solver_options=Dict("presolve"=>"on"))
 
-    """
-    Implement the three-index vehicle flow vrp. 
-    """
     m = Model(HiGHS.Optimizer)
 
     for (option, value) in solver_options
@@ -79,7 +61,7 @@ function three_index_vehicle_flow_cvrp(cost::Array{Float64,2},
     @constraint(m, [i in 1:I, k in 1:K], sum(x[i,j,k] for j in 1:J) == y[i,k])
     @constraint(m, [i in 1:I, k in 1:K], sum(x[j,i,k] for j in 1:J) == y[i,k])
 
-    @constraint(m, [k in 1:K], sum(demand[i] * y[i,k] i in 1:I) ≤ C)
+    @constraint(m, [k in 1:K], sum(demand[i] * y[i,k] for i in 1:I) ≤ C)
 
     #MTZ constraints
     for i in 2:I, j in 2:I, k in 1:K
@@ -98,16 +80,7 @@ function three_index_vehicle_flow_cvrp(cost::Array{Float64,2},
 
 end
 
-function commodity_flow_vrp(cost::Array{Float64,2}, 
-    demand::Array{Int,1},
-    capacity::Int;
-    K=1,
-    solver_options=Dict("presolve"=>"on"))
-
-    """
-    Implement a commodity flow vrp. 
-    Users must remember that it uses an extended graph with a copy of the depot node
-    """
+function commodity_flow_vrp(cost::Array{Float64,2}, demand::Array{Int,1}, capacity::Int; K=1, solver_options=Dict("presolve"=>"on"))
 
     m = Model(HiGHS.Optimizer)
 
